@@ -1,4 +1,6 @@
-pip uninstall py_hidreport
+@call .\version.bat
+
+pip uninstall %MOD_NAME%
 pause
-pip cache remove py_hidreport
+pip cache remove %MOD_NAME%
 pause

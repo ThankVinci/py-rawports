@@ -6,7 +6,7 @@ if exist ".\build\bdist.win32" (
     @rmdir /Q /S ".\build\bdist.win32"
 )
 
-if exist ".\build\bdist.amd64" (
+if exist ".\build\bdist.win-amd64" (
     @rmdir /Q /S ".\build\bdist.amd64"
 )
 
