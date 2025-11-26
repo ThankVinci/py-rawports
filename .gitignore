@@ -1,0 +1,4 @@
+/build
+/dist
+/src/composite_comm.egg-info
+/src/composite_comm/__pycache__

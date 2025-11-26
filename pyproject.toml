@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "composite_comm"
+keywords = ["communicate", "USB", "socket", "serial"]
+dynamic = ["version"]
+authors = [{ name = "ThankVinci", email = "thankvinci@163.com" }]
+description = "A composite commmunication interface."
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+dependencies = ["libusb==1.0.29", "pyserial==3.5"]
+
+[tool.distutils.bdist_wheel]
+python-tag = "py38"
+
+[project.optional-dependencies]
+dev = []
+
+[tool.setuptools.packages]
+find = { where = ["./src"] } 
