@@ -21,11 +21,11 @@ class Comm:
         self.__socket:socket.socket = None
     
     def close(self):
-        if(not self.isclose()):
+        if(not self.isclosed()):
             self.__socket.close()
         self.__socket = None
 
-    def isclose(self):
+    def isclosed(self):
         if(self.__socket is None):
             return True
         return False
@@ -48,14 +48,14 @@ class Comm:
         self.__socket.connect(self.__addresses[idx])
 
     def read(self, len:int, timeout:float=None)->bytes:
-        if(self.isclose()):
+        if(self.isclosed()):
             raise IOError('socket is close!')
         self.__socket.settimeout(timeout)
         return self.__socket.recv(len)
 
 
     def write(self, data:bytes, timeout:float=None):
-        if(self.isclose()):
+        if(self.isclosed()):
             raise IOError('socket is close!')
         self.__socket.settimeout(timeout)
         self.__socket.send(data)
