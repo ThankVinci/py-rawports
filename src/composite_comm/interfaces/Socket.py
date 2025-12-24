@@ -17,7 +17,7 @@ class Comm:
         # only support AF_INET and SOCK_STREAM now
         self.__addressfamily = af
         self.__sockettype = st
-        self.__addresses:Tuple[_Address] = None
+        self.__address:_Address = None
         self.__socket:socket.socket = None
     
     def close(self):
@@ -30,22 +30,12 @@ class Comm:
             return True
         return False
     
-    def connect(self, addresses:Union[_Address, Tuple[_Address]]):
-        __addresses = []
-        if(checkAddress(addresses)):
-            addresses = (addresses, )
-        if(isinstance(addresses, (tuple, list))):
-            for i in range(len(addresses)):
-                if(checkAddress(addresses[i])):
-                    __addresses.append(addresses[i])
-        self.__addresses = tuple(__addresses)
-    
-    def open(self, idx:int=0):
+    def open(self, address:_Address):
         self.close()
-        self.__socket = socket.socket(self.__addressfamily, self.__sockettype)
-        if(idx >= len(self.__addresses)):
-            raise IOError(f'can not open {idx}')
-        self.__socket.connect(self.__addresses[idx])
+        if(checkAddress(address)):
+            self.__address = address
+            self.__socket = socket.socket(self.__addressfamily, self.__sockettype)
+            self.__socket.connect(self.__address)
 
     def read(self, len:int, timeout:float=None)->bytes:
         if(self.isclosed()):
@@ -58,11 +48,11 @@ class Comm:
         if(self.isclosed()):
             raise IOError('socket is close!')
         self.__socket.settimeout(timeout)
-        self.__socket.send(data)
+        return self.__socket.send(data)
 
 def main():
     comm = Comm()
-    comm.connect(('127.0.0.1', 11451))
+    comm.open(('127.0.0.1', 11451))
     try:
         comm.open()
         comm.write(b'114514')

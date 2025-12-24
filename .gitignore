@@ -3,4 +3,4 @@
 /src/composite_comm.egg-info
 /src/composite_comm/__pycache__
 /src/composite_comm/examples/__pycache__
-/src/composite_comm/transports/__pycache__
+/src/composite_comm/interfaces/__pycache__
