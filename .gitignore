@@ -1,6 +1,6 @@
 /build
 /dist
-/src/composite_comm.egg-info
-/src/composite_comm/__pycache__
-/src/composite_comm/examples/__pycache__
-/src/composite_comm/interfaces/__pycache__
+/src/py_rawports.egg-info
+/src/py_rawports/__pycache__
+/src/py_rawports/examples/__pycache__
+/src/py_rawports/interfaces/__pycache__
