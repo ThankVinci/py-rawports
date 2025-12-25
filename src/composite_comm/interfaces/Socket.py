@@ -52,9 +52,8 @@ class Comm:
 
 def main():
     comm = Comm()
-    comm.open(('127.0.0.1', 11451))
     try:
-        comm.open()
+        comm.open(('127.0.0.1', 11451))
         comm.write(b'114514')
         print(comm.read(20))
     except Exception as e:

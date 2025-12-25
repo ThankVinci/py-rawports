@@ -10,7 +10,7 @@ class Interface(Enum):
 class Comm:
     __INTF = (Socket.Comm, USB.Comm, Serial.Comm)
     def __init__(self, ):
-        self.__comm:Union[Socket.Comm, ] = None
+        self.__comm:Union[Socket.Comm, USB.Comm, ] = None
     
     def open(self, type:Interface, connection:tuple):
         self.close()
@@ -24,11 +24,11 @@ class Comm:
     def isclosed(self):
         return self.__comm is None or self.__comm.isclosed()
     
-    def read(self, len:int):
-        return self.__comm.read(len)
+    def read(self, len:int, timeout:float = None):
+        return self.__comm.read(len, timeout)
 
-    def write(self, data:bytes):
-        return self.__comm.write(data) 
+    def write(self, data:bytes, timeout:float = None):
+        return self.__comm.write(data, timeout) 
     
 def main():
     comm = Comm()
