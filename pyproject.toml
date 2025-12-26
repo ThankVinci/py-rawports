@@ -7,7 +7,7 @@ name = "py_rawports"
 keywords = ["communicate", "USB", "socket", "serial"]
 dynamic = ["version"]
 authors = [{ name = "ThankVinci", email = "thankvinci@163.com" }]
-description = "A composite commmunication interface."
+description = "A composite interface for sending raw data."
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.8"

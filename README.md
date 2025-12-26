@@ -1,8 +1,7 @@
-# About omposite-comm
+# About py-rawports
 
-A composite commmunication interface.
+A composite interface for sending raw data.
 
 ## Function
 
-I need to communicate with different types of interfaces such as Socket, USB, or Serial via common read/write functions.
-
+Communicate with different types of interfaces (such as Socket, USB, or Serial) using common read/write functions.
