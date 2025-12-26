@@ -6,7 +6,7 @@ set PKG_VERSION=%REL_VER%%ALPHA_VER%
 set SCRIPTS_DIR=%cd%
 cd ..\..
 
-set PACK_NAME=".\dist\%MOD_NAME%-%PKG_VERSION%-py38-none-any.whl"
+set PACK_NAME=".\dist\%MOD_NAME%-%PKG_VERSION%-%PYTHON_TAG%-none-any.whl"
 
 if exist %PACK_NAME% (
     python -m pip install --upgrade twine
