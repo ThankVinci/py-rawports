@@ -1,9 +1,10 @@
 import socket
-from typing import Union, List, Tuple
+from typing import Union, Tuple
 
 _Address = Tuple[str, int]
 
 class _AddressChecker:
+    # check the ip address format and return the address family(or error message).
     @classmethod
     def __checkIpAddr(cls, ip_str:str):
         try:
@@ -16,6 +17,7 @@ class _AddressChecker:
             except socket.error:
                 return False, 'Invalid IpAddress'
 
+    # check the ip port and return the port number(or error message).
     @classmethod
     def __checkIpPort(cls, port:Union[int, str]):
         try:
@@ -29,6 +31,7 @@ class _AddressChecker:
         except TypeError:
             return False, 'Port can not be None'
     
+    # check (ip, port) and return the address family and (ip, port).
     @classmethod
     def check(cls, address:_Address)->bool:
         if(isinstance(address, (list, tuple))):
@@ -49,7 +52,7 @@ class Comm:
         self.__SocketKind:socket.SocketKind = SocketKind
         self.__socket:socket.socket = None
     
-    # open a socket connection
+    # open a socket connection by (ip, port)
     def open(self, address:_Address)->bool:
         self.close()
         status, __AddressFamily, address = _AddressChecker.check(address)
@@ -89,7 +92,7 @@ class Comm:
 def main():
     comm = Comm()
     try:
-        comm.open(('127.0.0.1', '11451'))
+        comm.open(('127.0.0.1', 11451))
         comm.write(b'114514')
         print(comm.read(20))
     except Exception as e:

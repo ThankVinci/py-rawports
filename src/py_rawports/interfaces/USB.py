@@ -3,49 +3,59 @@ import usb.core, usb.util, libusb_package
 from usb.backend import libusb1
 from usb.core import Device
 
-from enum import IntEnum
-from typing import Union, List, Tuple, Any, Callable, Type
+from typing import Union, List, Tuple, Optional
 
 be = libusb1.get_backend(find_library=libusb_package.find_library)
 
-class HWID:
-    def __init__(self, VID:int=0x0000, PID:int=0x0000):
-        self.VID = VID
-        self.PID = PID
+_HWID = Tuple[int, int, Optional[int]]
+
+class _HWIDMatch:
+    def __init__(self, hwID:_HWID):
+        self.VID:int = int(hwID[0])
+        self.PID:int = int(hwID[1])
+        self.ADDR:Union[int, None] = None
+        if(len(hwID) > 2):
+            self.ADDR = int(hwID[2])
     
     def __call__(self, dev:Device)->bool:
-        return dev.idVendor == self.VID and dev.idProduct == self.PID
+        __MATCH_ADDR = self.ADDR is None or dev.address == self.ADDR
+        return dev.idVendor == self.VID and dev.idProduct == self.PID and __MATCH_ADDR
 
 class _DEVInfo:
-    # usbdevice info, match one device via HWID and ADDR
-    def __init__(self, hwID:HWID, Addr:int, DEVNAME:str):
-        self.__hwID = hwID
-        self.__Addr = Addr
-        self.devname = DEVNAME
+    # usbdevice info, match one device via _HWIDMatch
+    def __init__(self, match_func:_HWIDMatch, DEVNAME:str):
+        self.__match_func:_HWIDMatch = match_func
+        self.__devname:str = DEVNAME
     
-    def __call__(self,dev)->bool:
-        return self.__hwID(dev) and dev.address == self.__Addr 
+    def __call__(self, dev:Device)->bool:
+        return self.__match_func(dev)
+    
+    # return a tuple representing _HWID, which you can use to open the device using USB.Comm.open. 
+    def HWID(self)->_HWID:
+        return (self.__match_func.VID, self.__match_func.PID, self.__match_func.ADDR)
+    
+    # return to the device name configured in the product.
+    def DevName(self)->str:
+        return self.__devname
 
 class _SCANInfo:
-    # usbscan info, match hwID and ADDR(if have)
-    # if Addr is None and host is connected to multiple devices with the same HWID, the scanner can scan all devices.
-    # if Addr is not None, then only one device will be matched.
-    def __init__(self, hwID:HWID, Addr:int=None):
-        self.__hwID = hwID
-        self.__Addr = Addr
+    # usbscan info, match HWID
+    # if hwID.ADDR is None and host is connected to multiple devices with the same HWID, the scanner can scan all devices.
+    # if hwID.ADDR is not None, then only one device will be matched.
+    def __init__(self, hwID:_HWID):
+        self.__match_func:_HWIDMatch = _HWIDMatch(hwID)
     
-    def __call__(self,dev)->bool:
-        __MATCH_ADDR = self.__Addr is None or dev.address == self.__Addr
-        return self.__hwID(dev) and __MATCH_ADDR
+    def __call__(self, dev:Device)->bool:
+        return self.__match_func(dev)
 
 class _USBFinder:
     # _USBFinder.scan will try to scan all deivce that match _SCANInfo
     @classmethod
     def scan(cls, match_func:_SCANInfo)->Tuple[Device]:
-        __devs_info = []
+        __devs_info:List[Device] = []
         if(callable(match_func)):
             for dev in usb.core.find(find_all=True, backend=be, custom_match=match_func):
-                __devs_info.append(_DEVInfo(dev.idVendor, dev.idProduct, dev.address, dev.product))
+                __devs_info.append(_DEVInfo(_HWIDMatch(dev.idVendor, dev.idProduct, dev.address), dev.product))
         return tuple(__devs_info)
 
     # _USBFinder.find will find only one device that matches _DEVInfo or _SCANInfo
@@ -53,7 +63,7 @@ class _USBFinder:
     def find(cls, match_func:Union[_DEVInfo, _SCANInfo])->Union[Device, None]:
         __dev = None
         if(callable(match_func)):
-            __dev = usb.core.find(find_all=False, backend=be, custom_match=match_func)
+            __dev:Device = usb.core.find(find_all=False, backend=be, custom_match=match_func)
         return __dev
 
 class Comm:
@@ -62,10 +72,12 @@ class Comm:
         self.__OUTEP:int = outEndpoint
         self.__dev:Device = None
     
-    # open usb device by matching function object
-    def open(self, match_func:_SCANInfo)->bool:
+    # open usb device by (VID, PID, addr(optional))
+    def open(self, hwID:_HWID)->bool:
         self.close()
-        self.__dev = _USBFinder.find(match_func)
+        self.__dev = _USBFinder.find(_SCANInfo(hwID))
+        if(self.isclosed()):
+            raise IOError('Can not find a usb device!')
         return self.isopen()
     
     def isopen(self)->bool:
@@ -100,7 +112,7 @@ class Comm:
 def main():
     comm = Comm()
     try:
-        comm.open(_SCANInfo(0x0101, 0x1010))
+        comm.open((0x1F3A, 0x3B04))
         comm.write(b'114514')
         print(comm.read(20))
     except Exception as e:
