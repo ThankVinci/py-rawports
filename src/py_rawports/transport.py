@@ -1,6 +1,10 @@
 from enum import IntEnum
 from typing import Union
-from interfaces import Socket, USB, Serial
+
+if __name__ == '__main__':
+    from interfaces import Socket, USB, Serial
+else:
+    from .interfaces import Socket, USB, Serial
 
 class Interface(IntEnum):
     Socket  = 0
