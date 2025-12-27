@@ -1,0 +1,33 @@
+from py_rawports.transport import Comm, Interface
+from py_rawports.interfaces import Socket
+
+def demo1():
+    comm = Comm()
+    try:
+        comm.open(Interface.Socket, ('127.0.0.1', 11451))
+        comm.write(b'114514')
+        print(comm.read(20))
+    except Exception as e:
+        print(f'{e}')
+    finally:
+        comm.close()
+
+def demo2():
+    comm = Comm()
+    try:
+        __socket = Socket.Comm()
+        __socket.open(('127.0.0.1', 11451))
+        comm.open(__socket)
+        comm.write(b'114514')
+        print(comm.read(20))
+    except Exception as e:
+        print(f'{e}')
+    finally:
+        comm.close()
+
+def main():
+    # demo1()
+    demo2()
+
+if __name__ == '__main__':
+    main()
