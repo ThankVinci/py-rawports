@@ -2,5 +2,5 @@
 
 source ./version.sh
 
-pip uninstall $$MOD_NAME
-pip cache remove $$MOD_NAME
+pip uninstall $MOD_NAME
+pip cache remove $MOD_NAME
