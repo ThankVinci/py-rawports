@@ -3,30 +3,61 @@ from typing import Union, List, Tuple
 
 _Address = Tuple[str, int]
 
-# a simple check
-def checkAddress(address:_Address)->bool:
-    if(isinstance(address, (list, tuple))):
-        if(len(address) == 2 
-           and isinstance(address[0], str) 
-           and isinstance(address[1], int)):
-            return True
-    return False
+class _AddressChecker:
+    @classmethod
+    def __checkIpAddr(cls, ip_str:str):
+        try:
+            socket.inet_pton(socket.AF_INET, ip_str)
+            return True, socket.AF_INET
+        except socket.error:
+            try:
+                socket.inet_pton(socket.AF_INET6, ip_str)
+                return True, socket.AF_INET6
+            except socket.error:
+                return False, 'Invalid IpAddress'
+
+    @classmethod
+    def __checkIpPort(cls, port:Union[int, str]):
+        try:
+            port_num = int(port)
+            if(0 <= port_num <= 65535):
+                return True, port_num
+            else:
+                return False, 'Port out of range(0-65535)'
+        except ValueError:
+            return False, 'Port must be number'
+        except TypeError:
+            return False, 'Port can not be None'
+    
+    @classmethod
+    def check(cls, address:_Address)->bool:
+        if(isinstance(address, (list, tuple))):
+            if(len(address) == 2):
+                status, addressfamily = cls.__checkIpAddr(address[0])
+                if(status):
+                    status, port_num = cls.__checkIpPort(address[1])
+                    if(status):
+                        return True, addressfamily, (address[0], port_num)
+                    else:
+                        error = port_num
+                else:
+                    error = addressfamily
+        return False, error, None
 
 class Comm:
-    def __init__(self, AF:socket.AddressFamily=socket.AF_INET, SK:socket.SocketKind=socket.SOCK_STREAM):
-        self.__AddressFamily:socket.AddressFamily = AF
-        self.__SocketKind:socket.SocketKind = SK
+    def __init__(self, SocketKind:socket.SocketKind=socket.SOCK_STREAM):
+        self.__SocketKind:socket.SocketKind = SocketKind
         self.__socket:socket.socket = None
     
     # open a socket connection
     def open(self, address:_Address)->bool:
         self.close()
-        if(checkAddress(address)):
-            self.__socket = socket.socket(self.__AddressFamily, self.__SocketKind)
-            try:
-                self.__socket.connect(address)
-            except:
-                self.close()
+        status, __AddressFamily, address = _AddressChecker.check(address)
+        if(status):
+            self.__socket = socket.socket(__AddressFamily, self.__SocketKind)
+            self.__socket.connect(address)
+        else:
+            raise IOError(__AddressFamily)
         return self.isopen()
 
     def isopen(self)->bool:
@@ -58,7 +89,7 @@ class Comm:
 def main():
     comm = Comm()
     try:
-        comm.open(('127.0.0.1', 11451))
+        comm.open(('127.0.0.1', '11451'))
         comm.write(b'114514')
         print(comm.read(20))
     except Exception as e:
