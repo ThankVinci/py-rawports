@@ -1,7 +1,7 @@
 import socket
 from typing import Union, Tuple
 
-_Address = Tuple[str, int]
+_Address = Tuple[str, int] # ip, port
 
 class _AddressChecker:
     # check the ip address format and return the address family(or error message).

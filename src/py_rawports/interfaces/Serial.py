@@ -1,3 +1,62 @@
+from serial import Serial, serialutil
+from typing import Tuple
+
+_Serial = Tuple[str, int, int] # serial port, baudrate, bytesize
+
+# in Macos/Linux, port_str is like /dev/tty.usbmodem12345678901, /dev/ttyGS0
+# in Windows, port_str is like \\.\COM3
 
 class Comm:
-    pass
+    def __init__(self, parity:str=serialutil.PARITY_NONE, stopbits:int=serialutil.STOPBITS_ONE):
+        self.__parity:str = parity
+        self.__stopbits:int = stopbits
+        self.__com:Serial = None
+    
+    # open serial com by (serial port, baudrate, len)
+    def open(self, serial:_Serial)->bool:
+        self.close()
+        self.__com = Serial(port=serial[0], baudrate=serial[1], bytesize=serial[2], 
+                               parity=self.__parity, stopbits=self.__stopbits
+                               )
+        return self.isopen()
+    
+    def isopen(self)->bool:
+        return self.__com is not None
+
+    def close(self)->bool:
+        if(not self.isclosed()):
+            pass
+        self.__com = None
+        return True
+
+    def isclosed(self)->bool:
+        if(self.__com is None):
+            return True
+        return False
+
+    def read(self, len:int, timeout:float=None)->bytes:
+        if(self.isclosed()):
+            raise IOError('serial port is close!')
+        self.__com.timeout = timeout
+        return self.__com.read(len)
+
+    def write(self, data:bytes, timeout:float=None)->int:
+        if(self.isclosed()):
+            raise IOError('serial port is close!')
+        self.__com.write_timeout = timeout
+        return self.__com.write(data)
+
+def main():
+    comm = Comm()
+    try:
+        comm.open(('/dev/tty.usbmodem12345678901', 115200, 8))
+        print(comm.read(20))
+        comm.write(b'114514')
+    except Exception as e:
+        print(f'Exception:{e} ')
+    finally:
+        comm.close()
+
+if __name__ == '__main__':
+    for i in range(1000):
+       main()

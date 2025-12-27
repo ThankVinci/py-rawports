@@ -7,7 +7,7 @@ from typing import Union, List, Tuple, Optional
 
 be = libusb1.get_backend(find_library=libusb_package.find_library)
 
-_HWID = Tuple[int, int, Optional[int]]
+_HWID = Tuple[int, int, Optional[int]] # VID, PID, address
 
 class _HWIDMatch:
     def __init__(self, hwID:_HWID):
