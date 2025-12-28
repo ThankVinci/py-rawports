@@ -1,10 +1,12 @@
 from py_rawports.transport import Comm, Interface
 from py_rawports.interfaces import USB
 
+link = (0x1F3A, 0x3B04)
+
 def demo1():
     comm = Comm()
     try:
-        comm.open(Interface.USB, (0x1F3A, 0x3B04))
+        comm.open(Interface.USB, link)
         comm.write(b'114514')
         print(comm.read(20))
     except Exception as e:
@@ -16,7 +18,7 @@ def demo2():
     comm = Comm()
     try:
         __usbdev = USB.Comm()
-        __usbdev.open((0x1F3A, 0x3B04))
+        __usbdev.open(link)
         comm.open(__usbdev)
         comm.write(b'114514')
         print(comm.read(20))
@@ -26,7 +28,7 @@ def demo2():
         comm.close()
 
 def main():
-    # demo1()
+    demo1()
     demo2()
 
 if __name__ == '__main__':

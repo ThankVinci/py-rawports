@@ -1,10 +1,12 @@
 from py_rawports.transport import Comm, Interface
 from py_rawports.interfaces import Socket
 
+link = ('127.0.0.1', 11451)
+
 def demo1():
     comm = Comm()
     try:
-        comm.open(Interface.Socket, ('127.0.0.1', 11451))
+        comm.open(Interface.Socket, link)
         comm.write(b'114514')
         print(comm.read(20))
     except Exception as e:
@@ -16,7 +18,7 @@ def demo2():
     comm = Comm()
     try:
         __socket = Socket.Comm()
-        __socket.open(('127.0.0.1', 11451))
+        __socket.open(link)
         comm.open(__socket)
         comm.write(b'114514')
         print(comm.read(20))
@@ -26,7 +28,7 @@ def demo2():
         comm.close()
 
 def main():
-    # demo1()
+    demo1()
     demo2()
 
 if __name__ == '__main__':

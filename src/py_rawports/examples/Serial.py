@@ -1,10 +1,12 @@
 from py_rawports.transport import Comm, Interface
 from py_rawports.interfaces import Serial
 
+link = (r'\\.\COM7', 115200, 8)
+
 def demo1():
     comm = Comm()
     try:
-        comm.open(Interface.Serial, (0x1F3A, 0x3B04))
+        comm.open(Interface.Serial, link)
         comm.write(b'114514')
         print(comm.read(20))
     except Exception as e:
@@ -16,7 +18,7 @@ def demo2():
     comm = Comm()
     try:
         __serial = Serial.Comm()
-        __serial.open((r'\\.\COM7', 115200, 8))
+        __serial.open(link)
         comm.open(__serial)
         comm.write(b'114514')
         print(comm.read(20))
@@ -26,7 +28,7 @@ def demo2():
         comm.close()
 
 def main():
-    # demo1()
+    demo1()
     demo2()
 
 if __name__ == '__main__':
