@@ -113,8 +113,8 @@ def main():
     comm = Comm()
     try:
         comm.open((0x1F3A, 0x3B04))
-        comm.write(b'114514')
-        print(comm.read(20))
+        comm.write(b'usb message!')
+        print(comm.read(32))
     except Exception as e:
         print(f'Exception:{e} ')
     finally:

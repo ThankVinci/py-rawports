@@ -93,8 +93,8 @@ def main():
     comm = Comm()
     try:
         comm.open(('127.0.0.1', 11451))
-        comm.write(b'114514')
-        print(comm.read(20))
+        comm.write(b'socket message!')
+        print(comm.read(32))
     except Exception as e:
         print(f'Exception:{e} ')
     finally:

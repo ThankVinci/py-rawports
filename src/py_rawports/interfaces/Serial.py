@@ -50,8 +50,8 @@ def main():
     comm = Comm()
     try:
         comm.open(('/dev/tty.usbmodem12345678901', 115200, 8))
-        comm.write(b'114514')
-        print(comm.read(20))
+        comm.write(b'serial message!')
+        print(comm.read(32))
     except Exception as e:
         print(f'Exception:{e} ')
     finally:

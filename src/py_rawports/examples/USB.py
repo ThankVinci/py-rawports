@@ -7,8 +7,8 @@ def demo1():
     comm = Comm()
     try:
         comm.open(Interface.USB, link)
-        comm.write(b'114514')
-        print(comm.read(20))
+        comm.write(b'Little pigs, let me come in.')
+        print(comm.read(32))
     except Exception as e:
         print(f'{e}')
     finally:
@@ -20,8 +20,8 @@ def demo2():
         __usbdev = USB.Comm()
         __usbdev.open(link)
         comm.open(__usbdev)
-        comm.write(b'114514')
-        print(comm.read(20))
+        comm.write(b'Here\'s Johnny!')
+        print(comm.read(32))
     except Exception as e:
         print(f'{e}')
     finally:

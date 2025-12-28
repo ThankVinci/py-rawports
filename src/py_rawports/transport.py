@@ -57,8 +57,8 @@ def main():
         comm.open(Interface.Socket, ('127.0.0.1', 11451))
         # comm.open(Interface.USB, (0x1F3A, 0x3B04))
         # comm.open(Interface.Serial, (r'\\.\COM7', 115200, 8))
-        comm.write(b'114514')
-        print(comm.read(20))
+        comm.write(b'test message!')
+        print(comm.read(32))
     except Exception as e:
         print(f'{e}')
     finally:
