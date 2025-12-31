@@ -4,7 +4,7 @@ from typing import Tuple
 _Serial = Tuple[str, int, int] # serial port, baudrate, bytesize
 
 # in Macos/Linux, port_str is like /dev/tty.usbmodem12345678901, /dev/ttyGS0, /dev/ttyACM0
-# in Windows, port_str is like \\.\COM3
+# in Windows, port_str is like \\.\COM3, COM4
 
 class Comm:
     def __init__(self, parity:str=serialutil.PARITY_NONE, stopbits:int=serialutil.STOPBITS_ONE):

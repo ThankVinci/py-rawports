@@ -1,31 +1,31 @@
-from py_rawports.transport import Comm, Interface
+from py_rawports.transport import RawPort, Interface
 from py_rawports.interfaces import USB
 
 link = (0x1F3A, 0x3B04)
 
 def demo1():
-    comm = Comm()
+    port = RawPort()
     try:
-        comm.open(Interface.USB, link)
-        comm.write(b'Little pigs, let me come in.')
-        print(comm.read(32))
+        port.open(Interface.USB, link)
+        port.write(b'Little pigs, let me come in.')
+        print(port.read(32))
     except Exception as e:
         print(f'{e}')
     finally:
-        comm.close()
+        port.close()
 
 def demo2():
-    comm = Comm()
+    port = RawPort()
     try:
-        __usbdev = USB.Comm()
-        __usbdev.open(link)
-        comm.open(__usbdev)
-        comm.write(b'Here\'s Johnny!')
-        print(comm.read(32))
+        __comm = USB.Comm()
+        __comm.open(link)
+        port.open(__comm)
+        port.write(b'Here\'s Johnny!')
+        print(port.read(32))
     except Exception as e:
         print(f'{e}')
     finally:
-        comm.close()
+        port.close()
 
 def main():
     demo1()
