@@ -8,10 +8,10 @@ class Comm:
     def __init__(self, block:bool=True):
         self.__block:bool = block
         self.__reader:io.BufferedReader = None
-        self.__writter:io.BufferedWriter = None
+        self.__writer:io.BufferedWriter = None
     
     def isclosed(self)->bool:
-        if(self.__reader is None or self.__writter is None):
+        if(self.__reader is None or self.__writer is None):
             return True
         return False
     
@@ -21,8 +21,8 @@ class Comm:
     # open reader writter
     def open(self, pthpair:_PathPair)->Comm:
         self.close()
-        self.__reader = io.open(pthpair[0], 'rb')
-        self.__writter = io.open(pthpair[1], 'wb')
+        self.__reader = open(pthpair[0], 'rb')
+        self.__writer = open(pthpair[1], 'wb')
         if(self.isclosed()):
             raise IOError('Can not open file io! check file path')
         return self
@@ -34,11 +34,11 @@ class Comm:
                     self.__reader.close()
                 finally:
                     self.__reader = None
-            if(self.__writter is not None):
+            if(self.__writer is not None):
                 try:
-                    self.__writter.close()
+                    self.__writer.close()
                 finally:
-                    self.__writter = None
+                    self.__writer = None
         return True
 
     def read(self, len:int, timeout:float=None)->bytes:
@@ -49,8 +49,8 @@ class Comm:
     def write(self, data:bytes, timeout:float=None)->int:
         if(self.isclosed()):
             raise IOError('writter is close!')
-        len = self.__writter.write(data)
-        self.__writter.flush()
+        len = self.__writer.write(data)
+        self.__writer.flush()
         return len
 
 def main():

@@ -1,6 +1,6 @@
 from py_rawports.transport import RawPort, Interface
 from py_rawports.interfaces import FileDescriptor
-import threading, os
+import threading
 
 link = ('/tmp/rawports/rfile', '/tmp/rawports/wfile')
 
