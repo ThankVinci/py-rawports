@@ -1,13 +1,18 @@
 source ./version.sh
 
-if [ -e "../../build/bdist.macosx-15.0-arm64" ]; then
-    rm -rf "../../build/bdist.macosx-15.0-arm64"
+export SCRIPTS_DIR=$(pwd)
+cd ../..
+
+if [ -e "./build/bdist.macosx-15.0-arm64" ]; then
+    rm -rf "./build/bdist.macosx-15.0-arm64"
 fi
 
-if [ -e "../../build/bdist.linux-x86_64" ]; then
-    rm -rf "../../build/bdist.linux-x86_64"
+if [ -e "./build/bdist.linux-x86_64" ]; then
+    rm -rf "./build/bdist.linux-x86_64"
 fi
 
-if [ -e "../../build/lib" ]; then
-    rm -rf "../../build/lib"
+if [ -e "./build/lib" ]; then
+    rm -rf "./build/lib"
 fi
+
+cd $SCRIPTS_DIR
