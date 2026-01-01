@@ -56,7 +56,7 @@ class Comm:
 def main():
     comm = Comm()
     try:
-        comm.open(('/home/johnsmith/rfile', '/home/johnsmith/wfile'))
+        comm.open(('/tmp/rawports/rfile', '/tmp/rawports/wfile'))
         comm.write(b'fileio message!')
         print(comm.read(32))
     except Exception as e:

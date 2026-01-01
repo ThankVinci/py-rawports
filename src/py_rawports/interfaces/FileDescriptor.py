@@ -18,7 +18,7 @@ class Comm:
     def isopen(self)->bool:
         return not self.isclosed()
     
-    # open fd_r fd_w
+    # open fd_read fd_write
     def open(self, pthpair:_PathPair)->Comm:
         self.close()
         self.__fd_read = os.open(pthpair[0], os.O_RDWR)
@@ -54,7 +54,7 @@ class Comm:
 def main():
     comm = Comm()
     try:
-        comm.open(('/home/johnsmith/rfile', '/home/johnsmith/wfile'))
+        comm.open(('/tmp/rawports/rfile', '/tmp/rawports/wfile'))
         comm.write(b'fd message!')
         print(comm.read(32))
     except Exception as e:
