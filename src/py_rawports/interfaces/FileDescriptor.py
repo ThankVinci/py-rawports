@@ -1,12 +1,16 @@
 from __future__ import annotations
-import os
+import os, sys
 from typing import Tuple
 
 _PathPair = Tuple[str, str] # read_path write_path
 
 class Comm:
-    def __init__(self, block:bool=True):
-        self.__block:bool = block
+    def __init__(self, rmode:int=os.O_RDONLY, wmode:int=os.O_WRONLY):
+        self.__rmode:int = rmode
+        self.__wmode:int = wmode
+        if sys.platform == "win32":
+            self.__rmode |= os.O_BINARY
+            self.__wmode |= os.O_BINARY
         self.__fd_read:int = -1
         self.__fd_write:int = -1
     
@@ -21,8 +25,8 @@ class Comm:
     # open fd_read fd_write
     def open(self, pthpair:_PathPair)->Comm:
         self.close()
-        self.__fd_read = os.open(pthpair[0], os.O_RDWR)
-        self.__fd_write = os.open(pthpair[1], os.O_RDWR)
+        self.__fd_read = os.open(pthpair[0], self.__rmode)
+        self.__fd_write = os.open(pthpair[1], self.__wmode)
         if(self.isclosed()):
             raise IOError('Can not open file descriptor! check file path')
         return self

@@ -1,6 +1,6 @@
 from py_rawports.transport import RawPort, Interface
 from py_rawports.interfaces import FileDescriptor
-import threading
+import threading, os
 
 link = ('/tmp/rawports/rfile', '/tmp/rawports/wfile')
 
@@ -32,7 +32,7 @@ def demo3():
         link = ('/tmp/rawports/pipe-b-a', '/tmp/rawports/pipe-a-b')
         port = RawPort()
         try:
-            port.open(Interface.FileDescriptor, link)
+            port.open(FileDescriptor.Comm(os.O_RDWR, os.O_RDWR).open(link))
             port.write(b'Little pigs, let me come in.')
             print(port.read(32))
         except Exception as e:
@@ -42,10 +42,10 @@ def demo3():
 
     def BtoA():
         print('B write to A start')
+        link = ('/tmp/rawports/pipe-a-b', '/tmp/rawports/pipe-b-a')
         port = RawPort()
         try:
-            link = ('/tmp/rawports/pipe-a-b', '/tmp/rawports/pipe-b-a')
-            port.open(Interface.FileDescriptor, link)
+            port.open(FileDescriptor.Comm(os.O_RDWR, os.O_RDWR).open(link))
             print(port.read(32))
             port.write(b'Little pigs, let me come out.')
         except Exception as e:

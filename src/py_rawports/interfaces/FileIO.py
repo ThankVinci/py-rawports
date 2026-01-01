@@ -5,8 +5,9 @@ from typing import Tuple
 _PathPair = Tuple[str, str] # read_path write_path
 
 class Comm:
-    def __init__(self, block:bool=True):
-        self.__block:bool = block
+    def __init__(self, rmode:str='rb', wmode:str='wb'):
+        self.__rmode:str = rmode
+        self.__wmode:str = wmode
         self.__reader:io.BufferedReader = None
         self.__writer:io.BufferedWriter = None
     
@@ -21,8 +22,8 @@ class Comm:
     # open reader writter
     def open(self, pthpair:_PathPair)->Comm:
         self.close()
-        self.__reader = open(pthpair[0], 'rb')
-        self.__writer = open(pthpair[1], 'wb')
+        self.__reader = open(pthpair[0], self.__rmode)
+        self.__writer = open(pthpair[1], self.__wmode)
         if(self.isclosed()):
             raise IOError('Can not open file io! check file path')
         return self
