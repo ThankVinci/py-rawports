@@ -2,9 +2,9 @@ from enum import IntEnum
 from typing import Union
 
 if __name__ == '__main__':
-    from interfaces import Socket, USB, Serial
+    from interfaces import Socket, USB, Serial, FileIO, FileDescriptor
 else:
-    from .interfaces import Socket, USB, Serial
+    from .interfaces import Socket, USB, Serial, FileIO, FileDescriptor
 
 class Interface(IntEnum):
     Socket  = 0
@@ -14,9 +14,9 @@ class Interface(IntEnum):
     FileDescriptor = 4
 
 class RawPort:
-    __INTF = (Socket.Comm, USB.Comm, Serial.Comm)
+    __INTF = (Socket.Comm, USB.Comm, Serial.Comm, FileIO.Comm, FileDescriptor.Comm)
     def __init__(self, ):
-        self.__comm:Union[Socket.Comm, USB.Comm, Serial.Comm] = None
+        self.__comm:Union[Socket.Comm, USB.Comm, Serial.Comm, FileIO.Comm, FileDescriptor.Comm] = None
     
     def isclosed(self)->bool:
         return self.__comm is None or self.__comm.isclosed()
@@ -57,8 +57,10 @@ def main():
     port = RawPort()
     try:
         port.open(Interface.Socket, ('127.0.0.1', 11451))
-        # comm.open(Interface.USB, (0x1F3A, 0x3B04))
-        # comm.open(Interface.Serial, (r'\\.\COM7', 115200, 8))
+        # port.open(Interface.USB, (0x1F3A, 0x3B04))
+        # port.open(Interface.Serial, (r'\\.\COM7', 115200, 8))
+        # port.open(Interface.FileIO, ('/home/johnsmith/rfile', '/home/johnsmith/wfile'))
+        # port.open(Interface.FileDescriptor, ('/home/johnsmith/rfile', '/home/johnsmith/wfile'))
         port.write(b'test message!')
         print(port.read(32))
     except Exception as e:

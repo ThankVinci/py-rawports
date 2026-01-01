@@ -53,7 +53,7 @@ class Comm:
 def main():
     comm = Comm()
     try:
-        comm.open(('/Users/johnsmith/Desktop/workspace/rfile', '/Users/johnsmith/Desktop/workspace/rfile'))
+        comm.open(('/home/johnsmith/rfile', '/home/johnsmith/wfile'))
         comm.write(b'fd message!')
         print(comm.read(32))
     except Exception as e:
