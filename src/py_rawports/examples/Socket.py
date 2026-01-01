@@ -17,9 +17,7 @@ def demo1():
 def demo2():
     port = RawPort()
     try:
-        __comm = Socket.Comm()
-        __comm.open(link)
-        port.open(__comm)
+        port.open(Socket.Comm().open(link))
         port.write(b'Here\'s Johnny!')
         print(port.read(32))
     except Exception as e:
