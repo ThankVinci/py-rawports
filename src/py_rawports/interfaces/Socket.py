@@ -62,27 +62,27 @@ class Comm:
         else:
             raise IOError(__AddressFamily)
         return self.isopen()
-
+    
+    def isclosed(self)->bool:
+        if(self.__socket is None):
+            return True
+        return False
+    
     def isopen(self)->bool:
-        return self.__socket is not None
+        return not self.isclosed()
     
     def close(self)->bool:
         if(not self.isclosed()):
             self.__socket.close()
         self.__socket = None
         return True
-
-    def isclosed(self)->bool:
-        if(self.__socket is None):
-            return True
-        return False
     
     def read(self, len:int, timeout:float=None)->bytes:
         if(self.isclosed()):
             raise IOError('socket is close!')
         self.__socket.settimeout(timeout)
         return self.__socket.recv(len)
-
+    
     def write(self, data:bytes, timeout:float=None)->int:
         if(self.isclosed()):
             raise IOError('socket is close!')

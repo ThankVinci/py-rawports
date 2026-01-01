@@ -12,27 +12,29 @@ class Comm:
         self.__stopbits:int = stopbits
         self.__com:Serial = None
     
+    def isclosed(self)->bool:
+        if(self.__com is None):
+            return True
+        return False
+    
+    def isopen(self)->bool:
+        return not self.isclosed()
+    
     # open serial com by (serial port, baudrate, len)
     def open(self, serial:_Serial)->bool:
         self.close()
         self.__com = Serial(port=serial[0], baudrate=serial[1], bytesize=serial[2], 
                                parity=self.__parity, stopbits=self.__stopbits
                                )
+        if(self.isclosed()):
+            raise IOError('Can not open a serial com!')
         return self.isopen()
-    
-    def isopen(self)->bool:
-        return self.__com is not None
 
     def close(self)->bool:
         if(not self.isclosed()):
             self.__com.close()
         self.__com = None
         return True
-
-    def isclosed(self)->bool:
-        if(self.__com is None):
-            return True
-        return False
 
     def read(self, len:int, timeout:float=None)->bytes:
         if(self.isclosed()):

@@ -72,6 +72,14 @@ class Comm:
         self.__OUTEP:int = outEndpoint
         self.__dev:Device = None
     
+    def isclosed(self)->bool:
+        if(self.__dev is None):
+            return True
+        return False
+    
+    def isopen(self)->bool:
+        return not self.isclosed()
+    
     # open usb device by (VID, PID, addr(optional))
     def open(self, hwID:_HWID)->bool:
         self.close()
@@ -80,19 +88,11 @@ class Comm:
             raise IOError('Can not find a usb device!')
         return self.isopen()
     
-    def isopen(self)->bool:
-        return self.__dev is not None
-
     def close(self)->bool:
         if(not self.isclosed()):
             usb.util.dispose_resources(self.__dev)
         self.__dev = None
         return True
-
-    def isclosed(self)->bool:
-        if(self.__dev is None):
-            return True
-        return False
 
     def read(self, len:int, timeout:float=None)->bytes:
         if(self.isclosed()):
