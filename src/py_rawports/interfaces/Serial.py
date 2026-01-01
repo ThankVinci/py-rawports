@@ -1,3 +1,4 @@
+from __future__ import annotations
 from serial import Serial, serialutil
 from typing import Tuple
 
@@ -21,14 +22,14 @@ class Comm:
         return not self.isclosed()
     
     # open serial com by (serial port, baudrate, len)
-    def open(self, serial:_Serial)->bool:
+    def open(self, serial:_Serial)->Comm:
         self.close()
         self.__com = Serial(port=serial[0], baudrate=serial[1], bytesize=serial[2], 
                                parity=self.__parity, stopbits=self.__stopbits
                                )
         if(self.isclosed()):
             raise IOError('Can not open a serial com!')
-        return self.isopen()
+        return self
 
     def close(self)->bool:
         if(not self.isclosed()):

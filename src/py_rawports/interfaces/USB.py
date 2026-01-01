@@ -1,4 +1,5 @@
 
+from __future__ import annotations
 import usb.core, usb.util, libusb_package
 from usb.backend import libusb1
 from usb.core import Device
@@ -81,12 +82,12 @@ class Comm:
         return not self.isclosed()
     
     # open usb device by (VID, PID, addr(optional))
-    def open(self, hwID:_HWID)->bool:
+    def open(self, hwID:_HWID)->Comm:
         self.close()
         self.__dev = _USBFinder.find(_SCANInfo(hwID))
         if(self.isclosed()):
             raise IOError('Can not find a usb device!')
-        return self.isopen()
+        return self
     
     def close(self)->bool:
         if(not self.isclosed()):

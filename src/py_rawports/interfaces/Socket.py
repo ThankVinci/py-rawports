@@ -1,3 +1,4 @@
+from __future__ import annotations
 import socket
 from typing import Union, Tuple
 
@@ -53,7 +54,7 @@ class Comm:
         self.__socket:socket.socket = None
     
     # open a socket connection by (ip, port)
-    def open(self, address:_Address)->bool:
+    def open(self, address:_Address)->Comm:
         self.close()
         status, __AddressFamily, address = _AddressChecker.check(address)
         if(status):
@@ -61,7 +62,7 @@ class Comm:
             self.__socket.connect(address)
         else:
             raise IOError(__AddressFamily)
-        return self.isopen()
+        return self
     
     def isclosed(self)->bool:
         if(self.__socket is None):

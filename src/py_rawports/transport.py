@@ -43,7 +43,7 @@ class RawPort:
         return self.__comm.write(data, timeout)
     
     # open a communication instance
-    def __open_instance(self, instance:Union[Socket.Comm, USB.Comm, Serial.Comm]):
+    def __open_instance(self, instance:Union[Socket.Comm, USB.Comm, Serial.Comm, FileIO.Comm, FileDescriptor.Comm]):
         self.close()
         self.__comm = instance
     

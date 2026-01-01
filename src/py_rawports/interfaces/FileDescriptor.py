@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 from typing import Tuple
 
@@ -18,26 +19,26 @@ class Comm:
         return not self.isclosed()
     
     # open fd_r fd_w
-    def open(self, pthpair:_PathPair)->bool:
+    def open(self, pthpair:_PathPair)->Comm:
         self.close()
-        self.__fd_read = os.open(pthpair[0], os.O_RDONLY)
-        self.__fd_write = os.open(pthpair[1], os.O_WRONLY)
+        self.__fd_read = os.open(pthpair[0], os.O_RDWR)
+        self.__fd_write = os.open(pthpair[1], os.O_RDWR)
         if(self.isclosed()):
             raise IOError('Can not open file descriptor! check file path')
-        return self.isopen()
+        return self
 
     def close(self)->bool:
         if(not self.isclosed()):
-            try:
-                os.close(self.__fd_read)
-            except:
-                pass
-            try:
-                os.close(self.__fd_write)
-            except:
-                pass
-        self.__fd_read = -1
-        self.__fd_write = -1
+            if(self.__fd_read != -1):
+                try:
+                    os.close(self.__fd_read)
+                finally:
+                    self.__fd_read = -1
+            if(self.__fd_write != -1):
+                try:
+                    os.close(self.__fd_write)
+                finally:
+                    self.__fd_write = -1
         return True
 
     def read(self, len:int, timeout:float=None)->bytes:
