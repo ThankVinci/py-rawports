@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "py_rawports"
-keywords = ["communicate", "USB", "socket", "serial"]
+keywords = ["communicate", "USB", "socket", "serial", "fileio", "filedescriptor"]
 dynamic = ["version"]
 authors = [{ name = "ThankVinci", email = "thankvinci@163.com" }]
 description = "A composite interface for sending raw data."
