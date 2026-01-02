@@ -1,3 +1,4 @@
+from __future__ import annotations
 from enum import IntEnum
 from typing import Union
 
@@ -22,14 +23,14 @@ class RawPort:
         return self.__comm is None or self.__comm.isclosed()
     
     def isopen(self)->bool:
-        return self.isclosed()
+        return not self.isclosed()
     
-    def open(self, *args)->bool:
+    def open(self, *args)->RawPort:
         if(isinstance(args[0], RawPort.__INTF)):
             self.__open_instance(*args)
         else:
             self.__new_interface(*args)
-        return self.isopen()
+        return self
     
     def close(self)->bool:
         if(not self.isclosed()):
