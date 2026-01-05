@@ -1,8 +1,18 @@
 from __future__ import annotations
 import os, sys
-from typing import Tuple
+from typing import Tuple, Union
 
 _PathPair = Tuple[str, str] # read_path write_path
+_PathRW = str # rw_path
+
+def _checkPathArgs(pth:Union[_PathPair, _PathRW])->Union[_PathPair, None]:
+    __pthpair = None
+    if(isinstance(pth, str)):
+        __pthpair = (pth, pth)
+    elif(isinstance(pth, (list, tuple)) and len(pth) == 2):
+        if(isinstance(pth[0], str) and isinstance(pth[1], str)):
+            __pthpair = (pth[0], pth[1])
+    return __pthpair
 
 class Comm:
     def __init__(self, rmode:int=os.O_RDONLY, wmode:int=os.O_WRONLY):
@@ -23,10 +33,13 @@ class Comm:
         return not self.isclosed()
     
     # open fd_read fd_write
-    def open(self, pthpair:_PathPair)->Comm:
+    def open(self, pth:Union[_PathPair, _PathRW])->Comm:
         self.close()
-        self.__fd_read = os.open(pthpair[0], self.__rmode)
-        self.__fd_write = os.open(pthpair[1], self.__wmode)
+        __pthpair = _checkPathArgs(pth)
+        if(__pthpair is None):
+            raise IOError('pth must be pathstr or (pathstr, pathstr)')
+        self.__fd_read = os.open(__pthpair[0], self.__rmode)
+        self.__fd_write = os.open(__pthpair[1], self.__wmode)
         if(self.isclosed()):
             raise IOError('Can not open file descriptor! check file path')
         return self
