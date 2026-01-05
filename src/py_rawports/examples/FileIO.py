@@ -4,6 +4,22 @@ import threading
 
 link = ('/tmp/rawports/rfile', '/tmp/rawports/wfile')
 
+def demo0():
+    rport = RawPort()
+    wport = RawPort()
+    try:
+        rport.open(Interface.FileIO, link[0])
+        wport.open(Interface.FileIO, link[1])
+        rport.write(b'Little pigs, let me come in.')
+        wport.write(b'Little pigs, let me come out.')
+        print(rport.read(32))
+        print(wport.read(32))
+    except Exception as e:
+        print(f'{e}')
+    finally:
+        rport.close()
+
+
 def demo1():
     port = RawPort()
     try:
@@ -27,6 +43,7 @@ def demo2():
         port.close()
 
 def main():
+    demo0()
     demo1()
     demo2()
 

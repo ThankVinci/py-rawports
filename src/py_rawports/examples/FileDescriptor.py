@@ -4,6 +4,22 @@ import threading, os
 
 link = ('/tmp/rawports/rfile', '/tmp/rawports/wfile')
 
+def demo0():
+    rport = RawPort()
+    wport = RawPort()
+    try:
+        rport.open(Interface.FileDescriptor, link[0])
+        wport.open(Interface.FileDescriptor, link[1])
+        rport.write(b'Little pigs, let me come in.')
+        wport.write(b'Little pigs, let me come out.')
+        print(rport.read(32))
+        print(wport.read(32))
+    except Exception as e:
+        print(f'{e}')
+    finally:
+        rport.close()
+
+
 def demo1():
     port = RawPort()
     try:
@@ -57,6 +73,7 @@ def demo3():
     threading.Thread(target=BtoA).start()
 
 def main():
+    demo0()
     demo1()
     demo2()
     demo3()
