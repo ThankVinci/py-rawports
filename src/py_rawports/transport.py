@@ -3,9 +3,11 @@ from enum import IntEnum
 from typing import Union
 
 if __name__ == '__main__':
-    from interfaces import Socket, USB, Serial, FileIO, FileDescriptor
-else:
-    from py_rawports.interfaces import Socket, USB, Serial, FileIO, FileDescriptor
+    import sys
+    from os.path import dirname
+    sys.path.append(dirname(dirname(__file__))) # append './../../' to sys.path
+
+from py_rawports.interfaces import Socket, USB, Serial, FileIO, FileDescriptor
 
 class Interface(IntEnum):
     Socket  = 0
