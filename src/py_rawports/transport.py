@@ -5,7 +5,7 @@ from typing import Union
 if __name__ == '__main__':
     from interfaces import Socket, USB, Serial, FileIO, FileDescriptor
 else:
-    from .interfaces import Socket, USB, Serial, FileIO, FileDescriptor
+    from py_rawports.interfaces import Socket, USB, Serial, FileIO, FileDescriptor
 
 class Interface(IntEnum):
     Socket  = 0
@@ -16,7 +16,7 @@ class Interface(IntEnum):
 
 class RawPort:
     __INTF = (Socket.Comm, USB.Comm, Serial.Comm, FileIO.Comm, FileDescriptor.Comm)
-    def __init__(self, ):
+    def __init__(self):
         self.__comm:Union[Socket.Comm, USB.Comm, Serial.Comm, FileIO.Comm, FileDescriptor.Comm] = None
     
     def isclosed(self)->bool:
