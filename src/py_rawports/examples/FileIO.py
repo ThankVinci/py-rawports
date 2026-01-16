@@ -1,6 +1,6 @@
 from py_rawports.transport import RawPort, Interface
 from py_rawports.interfaces import FileIO
-import threading
+from py_rawports.interfaces.FileIO import OpenMode
 
 link = ('/tmp/rawports/rfile', '/tmp/rawports/wfile')
 
@@ -42,10 +42,36 @@ def demo2():
     finally:
         port.close()
 
+def demo3():
+    port = RawPort()
+    link = ('/tmp/rawports/rfile', OpenMode.RDONLY)
+    try:
+        port.open(Interface.FileIO, link)
+        port.write(b'Here\'s Johnny!')
+        print(port.read(32))
+    except Exception as e:
+        print(f'{e}')
+    finally:
+        port.close()
+
+def demo4():
+    port = RawPort()
+    link = ('/tmp/rawports/wfile', OpenMode.WRONLY)
+    try:
+        port.open(Interface.FileIO, link)
+        port.write(b'Here\'s Johnny!')
+        print(port.read(32))
+    except Exception as e:
+        print(f'{e}')
+    finally:
+        port.close()
+
 def main():
     demo0()
     demo1()
     demo2()
+    demo3()
+    demo4()
 
 if __name__ == '__main__':
     main()

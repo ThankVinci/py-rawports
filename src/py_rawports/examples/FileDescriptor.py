@@ -43,6 +43,30 @@ def demo2():
         port.close()
 
 def demo3():
+    port = RawPort()
+    link = ('/tmp/rawports/rfile', os.O_RDONLY)
+    try:
+        port.open(Interface.FileDescriptor, link)
+        port.write(b'Here\'s Johnny!')
+        print(port.read(32))
+    except Exception as e:
+        print(f'{e}')
+    finally:
+        port.close()
+
+def demo4():
+    port = RawPort()
+    link = ('/tmp/rawports/wfile', os.O_WRONLY)
+    try:
+        port.open(Interface.FileDescriptor, link)
+        port.write(b'Here\'s Johnny!')
+        print(port.read(32))
+    except Exception as e:
+        print(f'{e}')
+    finally:
+        port.close()
+
+def demo5():
     def AtoB():
         print('A write to B start')
         link = ('/tmp/rawports/pipe-b-a', '/tmp/rawports/pipe-a-b')
@@ -77,6 +101,8 @@ def main():
     demo1()
     demo2()
     demo3()
+    demo4()
+    demo5()
 
 if __name__ == '__main__':
     main()
