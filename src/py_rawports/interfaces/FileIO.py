@@ -1,28 +1,51 @@
 from __future__ import annotations
 import io
+from enum import Enum
 from typing import Tuple, Union
 
-_PathPair = Tuple[str, str] # read_path write_path
-_PathRW = str # rw_path
+class OpenMode(Enum):
+    RDONLY = 'rb'
+    WRONLY = 'wb'
+    RDWR = 'rb+' # read and write (file must be exist)
+    WRRD = 'wb+' # write and read (file will be clear in open)
+    APPEND = 'ab+' # append and read
 
-def _checkPathArgs(pth:Union[_PathPair, _PathRW])->Union[_PathPair, None]:
+    def __str__(self):
+        return self.value
+    
+    def is_readable(self)->bool:
+        return self in (OpenMode.RDONLY, OpenMode.RDWR, OpenMode.WRRD, OpenMode.APPEND)
+    
+    def is_writable(self)->bool:
+        return self in (OpenMode.WRONLY, OpenMode.RDWR, OpenMode.WRRD, OpenMode.APPEND)
+
+_PathPair = Tuple[str, str] # read_path write_path
+_PathMode = Tuple[str, OpenMode]
+_PathPairMode = Tuple[str, str, OpenMode]
+
+def _checkPathArgs(pth:Union[_PathPair, _PathMode])->Union[_PathPair, _PathPairMode, None]:
     __pthpair = None
     if(isinstance(pth, str)):
         __pthpair = (pth, pth)
     elif(isinstance(pth, (list, tuple)) and len(pth) == 2):
         if(isinstance(pth[0], str) and isinstance(pth[1], str)):
             __pthpair = (pth[0], pth[1])
+        elif(isinstance(pth[0], str) and isinstance(pth[1], OpenMode)):
+            __pthpair = (pth[0], pth[0], pth[1])
     return __pthpair
 
 class Comm:
-    def __init__(self, rmode:str='rb', wmode:str='wb'):
-        self.__rmode:str = rmode
-        self.__wmode:str = wmode
-        self.__reader:io.BufferedReader = None
-        self.__writer:io.BufferedWriter = None
+    __reader:io.BufferedReader = None
+    __writer:io.BufferedWriter = None
+
+    def __init__(self, rmode:OpenMode=OpenMode.RDONLY, wmode:OpenMode=OpenMode.WRONLY):
+        self.__rmode:OpenMode = rmode
+        self.__wmode:OpenMode = wmode
     
     def isclosed(self)->bool:
-        if(self.__reader is None or self.__writer is None):
+        if(self.__rmode.is_readable() and self.__reader is None):
+            return True
+        if(self.__wmode.is_writable() and self.__writer is None):
             return True
         return False
     
@@ -30,13 +53,18 @@ class Comm:
         return not self.isclosed()
     
     # open reader writter
-    def open(self, pth:Union[_PathPair, _PathRW])->Comm:
+    def open(self, pthargs:Union[_PathPair, str, _PathMode])->Comm:
         self.close()
-        __pthpair = _checkPathArgs(pth)
+        __pthpair = _checkPathArgs(pthargs)
         if(__pthpair is None):
-            raise IOError('pth must be pathstr or (pathstr, pathstr)')
-        self.__reader = open(__pthpair[0], self.__rmode)
-        self.__writer = open(__pthpair[1], self.__wmode)
+            raise IOError('pthargs must be (pathstr, pathstr) or pathstr or (pathstr, mode)')
+        if(len(__pthpair) == 3):
+            self.__rmode = __pthpair[2]
+            self.__wmode = __pthpair[2]
+        if(self.__rmode.is_readable()):
+            self.__reader = open(__pthpair[0], f'{self.__rmode}')
+        if(self.__wmode.is_writable()):
+            self.__writer = open(__pthpair[1], f'{self.__wmode}')
         if(self.isclosed()):
             raise IOError('Can not open file io! check file path')
         return self
@@ -58,11 +86,17 @@ class Comm:
     def read(self, len:int, timeout:float=None)->bytes:
         if(self.isclosed()):
             raise IOError('reader is close!')
+        if(not self.__rmode.is_readable() or not self.__reader.readable()):
+            print('reader is not readable!')
+            return b''
         return self.__reader.read(len)
 
     def write(self, data:bytes, timeout:float=None)->int:
         if(self.isclosed()):
             raise IOError('writter is close!')
+        if(not self.__wmode.is_writable() or not self.__writer.writable()):
+            print('writter is not writable!')
+            return 0
         len = self.__writer.write(data)
         self.__writer.flush()
         return len

@@ -1,12 +1,12 @@
 from __future__ import annotations
 import os, sys
-from enum import IntEnum
 from typing import Tuple, Union
 
 _PathPair = Tuple[str, str] # read_path write_path
 _PathMode = Tuple[str, int]
+_PathPairMode = Tuple[str, str, int]
 
-def _checkPathArgs(pthargs:Union[_PathPair, str, _PathMode])->_PathPair:
+def _checkPathArgs(pthargs:Union[_PathPair, str, _PathMode])->Union[_PathPair, _PathPairMode, None]:
     __pthpair = None
     if(isinstance(pthargs, str)):
         __pthpair = (pthargs, pthargs)
@@ -48,7 +48,7 @@ class Comm:
         self.close()
         __pthpair = _checkPathArgs(pthargs)
         if(__pthpair is None):
-            raise IOError('pthargs must be (pathstr, pathstr) or pathstr')
+            raise IOError('pthargs must be (pathstr, pathstr) or pathstr or (pathstr, mode)')
         if(len(__pthpair) == 3):
             self.__rmode = __pthpair[2]
             self.__wmode = __pthpair[2]
@@ -78,19 +78,19 @@ class Comm:
         return True
 
     def read(self, len:int, timeout:float=None)->bytes:
+        if(self.isclosed()):
+            raise IOError('read file descriptor is close!')
         if(not _is_readable(self.__rmode)):
             print('read file descriptor is not readable!')
             return b''
-        if(self.isclosed()):
-            raise IOError('read file descriptor is close!')
         return os.read(self.__fd_read, len)
 
     def write(self, data:bytes, timeout:float=None)->int:
+        if(self.isclosed()):
+            raise IOError('write file descriptor is close!')
         if(not _is_writable(self.__wmode)):
             print('write file descriptor is not writable!')
             return 0
-        if(self.isclosed()):
-            raise IOError('write file descriptor is close!')
         return os.write(self.__fd_write, data)
 
 def main():
