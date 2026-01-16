@@ -1,31 +1,42 @@
 from __future__ import annotations
 import os, sys
+from enum import IntEnum
 from typing import Tuple, Union
 
 _PathPair = Tuple[str, str] # read_path write_path
-_PathRW = str # rw_path
+_PathMode = Tuple[str, int]
 
-def _checkPathArgs(pth:Union[_PathPair, _PathRW])->Union[_PathPair, None]:
+def _checkPathArgs(pthargs:Union[_PathPair, str, _PathMode])->_PathPair:
     __pthpair = None
-    if(isinstance(pth, str)):
-        __pthpair = (pth, pth)
-    elif(isinstance(pth, (list, tuple)) and len(pth) == 2):
-        if(isinstance(pth[0], str) and isinstance(pth[1], str)):
-            __pthpair = (pth[0], pth[1])
+    if(isinstance(pthargs, str)):
+        __pthpair = (pthargs, pthargs)
+    elif(isinstance(pthargs, (list, tuple)) and len(pthargs) == 2):
+        if(isinstance(pthargs[0], str) and isinstance(pthargs[1], str)):
+            __pthpair = (pthargs[0], pthargs[1])
+        elif(isinstance(pthargs[0], str) and isinstance(pthargs[1], int)):
+            __pthpair = (pthargs[0], pthargs[0], pthargs[1])
     return __pthpair
 
+def _is_readable(mode:int):
+    mode = mode & (os.O_RDONLY | os.O_WRONLY | os.O_RDWR)
+    return mode in (os.O_RDONLY, os.O_RDWR)
+
+def _is_writable(mode:int):
+    mode = mode & (os.O_RDONLY | os.O_WRONLY | os.O_RDWR)
+    return mode in (os.O_WRONLY, os.O_RDWR)
+
 class Comm:
+    __fd_read = -1
+    __fd_write = -1
+
     def __init__(self, rmode:int=os.O_RDONLY, wmode:int=os.O_WRONLY):
         self.__rmode:int = rmode
         self.__wmode:int = wmode
-        if sys.platform == "win32":
-            self.__rmode |= os.O_BINARY
-            self.__wmode |= os.O_BINARY
-        self.__fd_read:int = -1
-        self.__fd_write:int = -1
     
     def isclosed(self)->bool:
-        if(self.__fd_read == -1 or self.__fd_write == -1):
+        if(_is_readable(self.__rmode) and self.__fd_read == -1):
+            return True
+        if(_is_writable(self.__wmode) and self.__fd_write == -1):
             return True
         return False
 
@@ -33,13 +44,21 @@ class Comm:
         return not self.isclosed()
     
     # open fd_read fd_write
-    def open(self, pth:Union[_PathPair, _PathRW])->Comm:
+    def open(self, pthargs:Union[_PathPair, str, _PathMode])->Comm:
         self.close()
-        __pthpair = _checkPathArgs(pth)
+        __pthpair = _checkPathArgs(pthargs)
         if(__pthpair is None):
-            raise IOError('pth must be pathstr or (pathstr, pathstr)')
-        self.__fd_read = os.open(__pthpair[0], self.__rmode)
-        self.__fd_write = os.open(__pthpair[1], self.__wmode)
+            raise IOError('pthargs must be (pathstr, pathstr) or pathstr')
+        if(len(__pthpair) == 3):
+            self.__rmode = __pthpair[2]
+            self.__wmode = __pthpair[2]
+        if(sys.platform == "win32"):
+            self.__rmode |= os.O_BINARY
+            self.__wmode |= os.O_BINARY
+        if(_is_readable(self.__rmode)):
+            self.__fd_read = os.open(__pthpair[0], self.__rmode)
+        if(_is_writable(self.__wmode)):
+            self.__fd_write = os.open(__pthpair[1], self.__wmode)
         if(self.isclosed()):
             raise IOError('Can not open file descriptor! check file path')
         return self
@@ -59,11 +78,17 @@ class Comm:
         return True
 
     def read(self, len:int, timeout:float=None)->bytes:
+        if(not _is_readable(self.__rmode)):
+            print('read file descriptor is not readable!')
+            return b''
         if(self.isclosed()):
             raise IOError('read file descriptor is close!')
         return os.read(self.__fd_read, len)
 
     def write(self, data:bytes, timeout:float=None)->int:
+        if(not _is_writable(self.__wmode)):
+            print('write file descriptor is not writable!')
+            return 0
         if(self.isclosed()):
             raise IOError('write file descriptor is close!')
         return os.write(self.__fd_write, data)
