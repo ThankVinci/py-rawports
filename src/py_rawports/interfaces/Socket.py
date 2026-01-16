@@ -49,9 +49,10 @@ class _AddressChecker:
         return False, error, None
 
 class Comm:
+    __socket:socket.socket = None
+    
     def __init__(self, SocketKind:socket.SocketKind=socket.SOCK_STREAM):
         self.__SocketKind:socket.SocketKind = SocketKind
-        self.__socket:socket.socket = None
     
     # open a socket connection by (ip, port)
     def open(self, address:_Address)->Comm:
