@@ -35,12 +35,14 @@ def _checkPathArgs(pth:Union[_PathPair, _PathMode])->Union[_PathPair, _PathPairM
     return __pthpair
 
 class Comm:
-    __reader:io.BufferedReader = None
-    __writer:io.BufferedWriter = None
+    __reader:io.BufferedReader
+    __writer:io.BufferedWriter
 
     def __init__(self, rmode:OpenMode=OpenMode.RDONLY, wmode:OpenMode=OpenMode.WRONLY):
         self.__rmode:OpenMode = rmode
         self.__wmode:OpenMode = wmode
+        self.__reader:io.BufferedReader = None
+        self.__writer:io.BufferedWriter = None
     
     def isclosed(self)->bool:
         if(self.__rmode.is_readable() and self.__reader is None):

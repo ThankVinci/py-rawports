@@ -8,11 +8,12 @@ _Serial = Tuple[str, int, int] # serial port, baudrate, bytesize
 # in Windows, port_str is like \\.\COM3, COM4
 
 class Comm:
-    __com:Serial = None
+    __com:Serial
 
     def __init__(self, parity:str=serialutil.PARITY_NONE, stopbits:int=serialutil.STOPBITS_ONE):
         self.__parity:str = parity
         self.__stopbits:int = stopbits
+        self.__com:Serial = None
     
     def isclosed(self)->bool:
         if(self.__com is None):

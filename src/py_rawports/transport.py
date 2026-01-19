@@ -17,6 +17,7 @@ class Interface(IntEnum):
     FileDescriptor = 4
 
 class RawPort:
+    
     __INTF = (Socket.Comm, USB.Comm, Serial.Comm, FileIO.Comm, FileDescriptor.Comm)
     def __init__(self):
         self.__comm:Union[Socket.Comm, USB.Comm, Serial.Comm, FileIO.Comm, FileDescriptor.Comm] = None

@@ -68,11 +68,12 @@ class _USBFinder:
         return __dev
 
 class Comm:
-    __dev:Device = None
+    __dev:Device
 
     def __init__(self, inEndpoint:int=0x81, outEndpoint:int=0x01):
         self.__INEP:int = inEndpoint
         self.__OUTEP:int = outEndpoint
+        self.__dev:Device = None
     
     def isclosed(self)->bool:
         if(self.__dev is None):

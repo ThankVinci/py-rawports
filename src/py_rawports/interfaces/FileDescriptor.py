@@ -26,12 +26,14 @@ def _is_writable(mode:int):
     return mode in (os.O_WRONLY, os.O_RDWR)
 
 class Comm:
-    __fd_read = -1
-    __fd_write = -1
+    __fd_read:int
+    __fd_write:int
 
     def __init__(self, rmode:int=os.O_RDONLY, wmode:int=os.O_WRONLY):
         self.__rmode:int = rmode
         self.__wmode:int = wmode
+        self.__fd_read = -1
+        self.__fd_write = -1
     
     def isclosed(self)->bool:
         if(_is_readable(self.__rmode) and self.__fd_read == -1):
