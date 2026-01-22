@@ -39,11 +39,14 @@ class Comm:
         self.__com = None
         return True
 
-    def read(self, len:int, timeout:float=None)->bytes:
+    def read(self, size:int, timeout:float=None)->bytes:
         if(self.isclosed()):
             raise IOError('serial port is close!')
         self.__com.timeout = timeout
-        return self.__com.read(len)
+        available = self.__com.in_waiting
+        if(size > available):
+            size = available
+        return self.__com.read(size)
 
     def write(self, data:bytes, timeout:float=None)->int:
         if(self.isclosed()):

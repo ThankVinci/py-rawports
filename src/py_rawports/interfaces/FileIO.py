@@ -85,13 +85,13 @@ class Comm:
                     self.__writer = None
         return True
 
-    def read(self, len:int, timeout:float=None)->bytes:
+    def read(self, size:int, timeout:float=None)->bytes:
         if(self.isclosed()):
             raise IOError('reader is close!')
         if(not self.__rmode.is_readable() or not self.__reader.readable()):
             print('reader is not readable!')
             return b''
-        return self.__reader.read(len)
+        return self.__reader.read(size)
 
     def write(self, data:bytes, timeout:float=None)->int:
         if(self.isclosed()):

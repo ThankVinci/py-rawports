@@ -79,13 +79,13 @@ class Comm:
                     self.__fd_write = -1
         return True
 
-    def read(self, len:int, timeout:float=None)->bytes:
+    def read(self, size:int, timeout:float=None)->bytes:
         if(self.isclosed()):
             raise IOError('read file descriptor is close!')
         if(not _is_readable(self.__rmode)):
             print('read file descriptor is not readable!')
             return b''
-        return os.read(self.__fd_read, len)
+        return os.read(self.__fd_read, size)
 
     def write(self, data:bytes, timeout:float=None)->int:
         if(self.isclosed()):

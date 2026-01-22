@@ -97,12 +97,12 @@ class Comm:
         self.__dev = None
         return True
 
-    def read(self, len:int, timeout:float=None)->bytes:
+    def read(self, size:int, timeout:float=None)->bytes:
         if(self.isclosed()):
             raise IOError('usb is close!')
         if(timeout is not None):
             timeout = int(timeout * 1000) # s -> ms
-        data = self.__dev.read(self.__INEP, len, timeout)
+        data = self.__dev.read(self.__INEP, size, timeout)
         return data.tobytes()
 
     def write(self, data:bytes, timeout:float=None)->int:

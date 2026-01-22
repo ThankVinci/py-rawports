@@ -80,11 +80,11 @@ class Comm:
         self.__socket = None
         return True
     
-    def read(self, len:int, timeout:float=None)->bytes:
+    def read(self, size:int, timeout:float=None)->bytes:
         if(self.isclosed()):
             raise IOError('socket is close!')
         self.__socket.settimeout(timeout)
-        return self.__socket.recv(len)
+        return self.__socket.recv(size)
     
     def write(self, data:bytes, timeout:float=None)->int:
         if(self.isclosed()):

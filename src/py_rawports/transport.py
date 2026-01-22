@@ -40,8 +40,8 @@ class RawPort:
             self.__comm.close()
         return True
     
-    def read(self, len:int, timeout:float = None)->bytes:
-        return self.__comm.read(len, timeout)
+    def read(self, size:int, timeout:float = None)->bytes:
+        return self.__comm.read(size, timeout)
 
     def write(self, data:bytes, timeout:float = None)->int:
         return self.__comm.write(data, timeout)
