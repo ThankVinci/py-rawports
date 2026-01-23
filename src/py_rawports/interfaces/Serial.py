@@ -43,8 +43,12 @@ class Comm:
         if(self.isclosed()):
             raise IOError('serial port is close!')
         self.__com.timeout = timeout
-        available = self.__com.in_waiting
-        if(size > available):
+        available = 0
+        while(True):
+            available = self.__com.in_waiting
+            if(available > 0):
+                break
+        if(size >= available):
             size = available
         return self.__com.read(size)
 
