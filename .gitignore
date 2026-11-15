@@ -1,3 +1,4 @@
+/.venv
 /build
 /dist
 /src/py_rawports.egg-info
