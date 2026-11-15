@@ -1,20 +1,21 @@
 from __future__ import annotations
 import os, sys
 from typing import Tuple, Union
+from pathlib import Path
 
-_PathPair = Tuple[str, str] # read_path write_path
-_PathMode = Tuple[str, int]
-_PathPairMode = Tuple[str, str, int]
+_PathPair = Tuple[Union[str, Path], Union[str, Path]] # read_path write_path
+_PathMode = Tuple[Union[str, Path], int]
+_PathPairMode = Tuple[Union[str, Path], Union[str, Path], int]
 
 def _checkPathArgs(pthargs:Union[_PathPair, str, _PathMode])->Union[_PathPair, _PathPairMode, None]:
     __pthpair = None
-    if(isinstance(pthargs, str)):
+    if(isinstance(pthargs, (str, Path))):
         __pthpair = (pthargs, pthargs)
     elif(isinstance(pthargs, (list, tuple)) and len(pthargs) == 2):
-        if(isinstance(pthargs[0], str) and isinstance(pthargs[1], str)):
-            __pthpair = (pthargs[0], pthargs[1])
-        elif(isinstance(pthargs[0], str) and isinstance(pthargs[1], int)):
-            __pthpair = (pthargs[0], pthargs[0], pthargs[1])
+        if(isinstance(pthargs[0], (str, Path)) and isinstance(pthargs[1], (str, Path))):
+            __pthpair = (Path(pthargs[0]), Path(pthargs[1]))
+        elif(isinstance(pthargs[0], (str, Path)) and isinstance(pthargs[1], int)):
+            __pthpair = (Path(pthargs[0]), Path(pthargs[0]), pthargs[1])
     return __pthpair
 
 def _is_readable(mode:int):
@@ -58,9 +59,9 @@ class Comm:
             self.__rmode |= os.O_BINARY
             self.__wmode |= os.O_BINARY
         if(_is_readable(self.__rmode)):
-            self.__fd_read = os.open(__pthpair[0], self.__rmode)
+            self.__fd_read = os.open(f'{__pthpair[0]}', self.__rmode)
         if(_is_writable(self.__wmode)):
-            self.__fd_write = os.open(__pthpair[1], self.__wmode)
+            self.__fd_write = os.open(f'{__pthpair[1]}', self.__wmode)
         if(self.isclosed()):
             raise IOError('Can not open file descriptor! check file path')
         return self

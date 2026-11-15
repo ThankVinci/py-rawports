@@ -2,6 +2,7 @@ from __future__ import annotations
 import io
 from enum import Enum
 from typing import Tuple, Union
+from pathlib import Path
 
 class OpenMode(Enum):
     RDONLY = 'rb'
@@ -19,19 +20,19 @@ class OpenMode(Enum):
     def is_writable(self)->bool:
         return self in (OpenMode.WRONLY, OpenMode.RDWR, OpenMode.WRRD, OpenMode.APPEND)
 
-_PathPair = Tuple[str, str] # read_path write_path
-_PathMode = Tuple[str, OpenMode]
-_PathPairMode = Tuple[str, str, OpenMode]
+_PathPair = Tuple[Union[str, Path], Union[str, Path]] # read_path write_path
+_PathMode = Tuple[Union[str, Path], OpenMode]
+_PathPairMode = Tuple[Union[str, Path], Union[str, Path], OpenMode]
 
 def _checkPathArgs(pth:Union[_PathPair, _PathMode])->Union[_PathPair, _PathPairMode, None]:
     __pthpair = None
-    if(isinstance(pth, str)):
-        __pthpair = (pth, pth)
+    if(isinstance(pth, (str, Path))):
+        __pthpair = (Path(pth), Path(pth))
     elif(isinstance(pth, (list, tuple)) and len(pth) == 2):
-        if(isinstance(pth[0], str) and isinstance(pth[1], str)):
-            __pthpair = (pth[0], pth[1])
-        elif(isinstance(pth[0], str) and isinstance(pth[1], OpenMode)):
-            __pthpair = (pth[0], pth[0], pth[1])
+        if(isinstance(pth[0], (str, Path)) and isinstance(pth[1], (str, Path))):
+            __pthpair = (Path(pth[0]), Path(pth[1]))
+        elif(isinstance(pth[0], (str, Path)) and isinstance(pth[1], OpenMode)):
+            __pthpair = (Path(pth[0]), Path(pth[0]), pth[1])
     return __pthpair
 
 class Comm:
@@ -64,9 +65,9 @@ class Comm:
             self.__rmode = __pthpair[2]
             self.__wmode = __pthpair[2]
         if(self.__rmode.is_readable()):
-            self.__reader = open(__pthpair[0], f'{self.__rmode}')
+            self.__reader = open(f'{__pthpair[0]}', f'{self.__rmode}')
         if(self.__wmode.is_writable()):
-            self.__writer = open(__pthpair[1], f'{self.__wmode}')
+            self.__writer = open(f'{__pthpair[1]}', f'{self.__wmode}')
         if(self.isclosed()):
             raise IOError('Can not open file io! check file path')
         return self
