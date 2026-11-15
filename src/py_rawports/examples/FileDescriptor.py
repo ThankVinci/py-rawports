@@ -1,8 +1,14 @@
 from py_rawports.transport import RawPort, Interface
 from py_rawports.interfaces import FileDescriptor
-import threading, os
+import threading, os, sys
 
-link = ('/tmp/rawports/rfile', '/tmp/rawports/wfile')
+if(sys.platform == 'win32'):
+    rfile = 'C:/tmp/rawports/rfile'
+    wfile = 'C:/tmp/rawports/wfile'
+else:
+    rfile = '/tmp/rawports/rfile'
+    wfile = '/tmp/rawports/wfile'
+link = (rfile, wfile)
 
 def demo0():
     rport = RawPort()
@@ -44,7 +50,7 @@ def demo2():
 
 def demo3():
     port = RawPort()
-    link = ('/tmp/rawports/rfile', os.O_RDONLY)
+    link = (rfile, os.O_RDONLY)
     try:
         port.open(Interface.FileDescriptor, link)
         port.write(b'Here\'s Johnny!')
@@ -56,7 +62,7 @@ def demo3():
 
 def demo4():
     port = RawPort()
-    link = ('/tmp/rawports/wfile', os.O_WRONLY)
+    link = (wfile, os.O_WRONLY)
     try:
         port.open(Interface.FileDescriptor, link)
         port.write(b'Here\'s Johnny!')

@@ -1,8 +1,15 @@
 from py_rawports.transport import RawPort, Interface
 from py_rawports.interfaces import FileIO
 from py_rawports.interfaces.FileIO import OpenMode
+import sys
 
-link = ('/tmp/rawports/rfile', '/tmp/rawports/wfile')
+if(sys.platform == 'win32'):
+    rfile = 'C:/tmp/rawports/rfile'
+    wfile = 'C:/tmp/rawports/wfile'
+else:
+    rfile = '/tmp/rawports/rfile'
+    wfile = '/tmp/rawports/wfile'
+link = (rfile, wfile)
 
 def demo0():
     rport = RawPort()
@@ -44,7 +51,7 @@ def demo2():
 
 def demo3():
     port = RawPort()
-    link = ('/tmp/rawports/rfile', OpenMode.RDONLY)
+    link = (rfile, OpenMode.RDONLY)
     try:
         port.open(Interface.FileIO, link)
         port.write(b'Here\'s Johnny!')
@@ -56,7 +63,7 @@ def demo3():
 
 def demo4():
     port = RawPort()
-    link = ('/tmp/rawports/wfile', OpenMode.WRONLY)
+    link = (wfile, OpenMode.WRONLY)
     try:
         port.open(Interface.FileIO, link)
         port.write(b'Here\'s Johnny!')
